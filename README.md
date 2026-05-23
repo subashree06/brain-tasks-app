@@ -55,6 +55,7 @@ Brain-Tasks-App/
 ├── k8s/
 │   ├── deployment.yaml      # Kubernetes Deployment (2 replicas)
 │   └── service.yaml         # LoadBalancer Service
+├── screenshots/             # Project screenshots
 ├── Dockerfile               # Nginx serving dist/ on port 3000
 ├── nginx.conf               # Nginx config (SPA routing + gzip)
 ├── buildspec.yml            # AWS CodeBuild pipeline spec
@@ -64,10 +65,12 @@ Brain-Tasks-App/
 
 ---
 
-## 🐳 Docker Setup
+## 🐳 Phase 1 — Docker
 
-### Dockerfile
-Uses `nginx:alpine` to serve the pre-built React app on port 3000.
+### What we did
+- Created `Dockerfile` using `nginx:alpine` base image
+- Created `nginx.conf` to serve the React app on port 3000 with SPA routing
+- Built and tested the Docker image locally
 
 ### Build & Run Locally
 
@@ -75,45 +78,82 @@ Uses `nginx:alpine` to serve the pre-built React app on port 3000.
 # Build the Docker image
 docker build -t brain-tasks-app:latest .
 
-# Run the container
+# Verify image was created
+docker images | grep brain-tasks-app
+
+# Run the container on port 3000
 docker run -d -p 3000:3000 --name brain-tasks-test brain-tasks-app:latest
 
-# Open in browser
-http://localhost:3000
+# Check container is running
+docker ps
 
-# Stop the container
+# View container logs
+docker logs brain-tasks-test
+
+# Stop and remove container
 docker stop brain-tasks-test
 docker rm brain-tasks-test
 ```
 
-### Verify image
-```bash
-docker images | grep brain-tasks-app
-```
+### ✅ Output — Docker Image Built
+
+![Docker Image](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/docker-image.png)
+
+### ✅ Output — Container Running
+
+![Docker Running](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/docker-running.png)
+
+### ✅ Output — App Running at localhost:3000
+
+![App Preview](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/app-preview.png)
 
 ---
 
-## 🗂️ AWS ECR — Container Registry
+## 🗂️ Phase 2 — AWS ECR (Container Registry)
+
+### What we did
+- Created a private ECR repository to store Docker images
+- Tagged and pushed the Docker image to ECR
 
 ```bash
 # Create ECR repository
-aws ecr create-repository --repository-name brain-tasks-app --region us-east-1
+aws ecr create-repository \
+  --repository-name brain-tasks-app \
+  --region us-east-1
 
 # Authenticate Docker to ECR
 aws ecr get-login-password --region us-east-1 | \
-  docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+  docker login --username AWS --password-stdin \
+  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
 
-# Tag and push image
-docker tag brain-tasks-app:latest <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
-docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
+# Tag image
+docker tag brain-tasks-app:latest \
+  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
+
+# Push to ECR
+docker push \
+  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
+
+# Verify image in ECR
+aws ecr list-images --repository-name brain-tasks-app --region us-east-1
 ```
+
+### ✅ Output — ECR Repository Created
+
+![ECR Repository](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/ecr-repo.png)
 
 ---
 
-## ☸️ Kubernetes — AWS EKS
+## ☸️ Phase 3 — AWS EKS (Kubernetes)
 
-### Create EKS Cluster
+### What we did
+- Created an EKS cluster with 2 t3.micro worker nodes
+- Wrote `deployment.yaml` (2 replicas, health checks, resource limits)
+- Wrote `service.yaml` (LoadBalancer exposing port 80 → 3000)
+- Deployed the app using `kubectl`
+
 ```bash
+# Create EKS cluster
 eksctl create cluster \
   --name brain-tasks-cluster \
   --region us-east-1 \
@@ -121,56 +161,69 @@ eksctl create cluster \
   --node-type t3.micro \
   --nodes 2 \
   --managed
-```
 
-### Deploy to EKS
-```bash
 # Configure kubectl
 aws eks update-kubeconfig --region us-east-1 --name brain-tasks-cluster
 
-# Apply manifests
+# Verify nodes are ready
+kubectl get nodes
+
+# Deploy to EKS
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 
 # Check pods
 kubectl get pods
 
-# Get app URL
+# Get public URL
 kubectl get svc brain-tasks-app-service
 ```
 
-### Kubernetes Files
+### ✅ Output — EKS Cluster Running
 
-| File | Purpose |
-|------|---------|
-| `k8s/deployment.yaml` | 2 replicas, rolling updates, health checks |
-| `k8s/service.yaml` | AWS LoadBalancer, port 80 → 3000 |
+![EKS Cluster](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/eks-cluster.png)
+
+### ✅ Output — Pods Running
+
+![Pods Running](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/eks-pods.png)
 
 ---
 
-## 🔧 AWS CodeBuild
+## 🔧 Phase 4 — AWS CodeBuild
 
-The `buildspec.yml` automates:
-1. Install `kubectl`
-2. Login to ECR
-3. Build & tag Docker image
-4. Push image to ECR
-5. Deploy to EKS via `kubectl`
-6. Stream logs to CloudWatch
+### What we did
+- Created `buildspec.yml` with 4 phases: install, pre_build, build, post_build
+- CodeBuild installs kubectl, logs into ECR, builds Docker image, pushes to ECR, deploys to EKS
+- Logs streamed to CloudWatch
 
-### Create SSM Parameter
 ```bash
+# Store AWS Account ID in SSM
 aws ssm put-parameter \
   --name "/codebuild/aws-account-id" \
   --value "<YOUR_ACCOUNT_ID>" \
   --type "String"
+
+# Trigger a manual build
+aws codebuild start-build \
+  --project-name brain-tasks-app-build \
+  --region us-east-1
 ```
+
+### ✅ Output — CodeBuild Project
+
+![CodeBuild Project](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codebuild.png)
+
+### ✅ Output — Build Succeeded
+
+![CodeBuild Success](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codebuild-success.png)
 
 ---
 
-## 🚀 AWS CodePipeline
+## 🚀 Phase 5 — AWS CodePipeline
 
-Fully automated pipeline triggered on every `git push`:
+### What we did
+- Created a 3-stage pipeline: Source → Build → Deploy
+- Pipeline triggers automatically on every `git push` to `main`
 
 | Stage | Tool | Action |
 |-------|------|--------|
@@ -178,24 +231,37 @@ Fully automated pipeline triggered on every `git push`:
 | Build | AWS CodeBuild | Builds Docker image, pushes to ECR |
 | Deploy | kubectl (in CodeBuild) | Applies K8s manifests to EKS |
 
+### ✅ Output — Pipeline Succeeded
+
+![CodePipeline](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codepipeline.png)
+
 ---
 
-## 📊 Monitoring — CloudWatch
+## 📊 Phase 6 — Monitoring (CloudWatch)
+
+### What we did
+- Enabled CloudWatch Logs in CodeBuild project
+- Log group: `/codebuild/brain-tasks-app`
+- Monitored pod logs via `kubectl`
 
 ```bash
-# Stream CodeBuild logs
+# Stream CodeBuild logs live
 aws logs tail /codebuild/brain-tasks-app --follow
 
-# View pod logs
+# View logs for a specific pod
 kubectl logs -f <POD_NAME>
 
-# View all pod logs
+# View logs for all pods
 kubectl logs -l app=brain-tasks-app --all-containers
 ```
 
+### ✅ Output — CloudWatch Logs
+
+![CloudWatch Logs](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/cloudwatch.png)
+
 ---
 
-## ⚙️ Environment Variables (buildspec.yml)
+## ⚙️ Environment Variables
 
 | Variable | Value |
 |----------|-------|
@@ -213,27 +279,17 @@ kubectl logs -l app=brain-tasks-app --all-containers
 | ECR | 500 MB/month free |
 | CodeBuild | 100 min/month free |
 | CodePipeline | 1 pipeline free |
-| EKS | ❌ $0.10/hr — delete when not in use |
-| EC2 t3.micro | 750 hrs/month free |
+| CloudWatch Logs | 5 GB free |
+| EKS Control Plane | ❌ $0.10/hr — delete when not in use |
+| EC2 t3.micro nodes | 750 hrs/month free |
 
 ```bash
-# Delete EKS cluster to avoid charges
+# Delete EKS cluster to stop charges
 eksctl delete cluster --name brain-tasks-cluster --region us-east-1
 ```
 
 ---
 
-## 🖥️ App Preview
-
-> Brain Tasks running at `localhost:3000` via Docker + Nginx
-
-- ✅ Task management with search
-- ✅ Filter by All / Pending / Completed / Priority
-- ✅ Create Task button
-- ✅ Served by Nginx on port 3000 inside Docker
-
----
-
 ## 👤 Author
 
-Deployed as part of a DevOps learning project covering Docker, ECR, EKS, CodeBuild, CodePipeline, and CloudWatch.
+**Subashree** — Deployed as part of a DevOps learning project covering Docker, ECR, EKS, CodeBuild, CodePipeline, and CloudWatch.
