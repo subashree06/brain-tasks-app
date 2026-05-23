@@ -11,8 +11,6 @@ env:
 
 phases:
   install:
-    runtime-versions:
-      docker: 20
     commands:
       - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -42,9 +40,6 @@ phases:
       - docker push $IMAGE_URI:latest
       - echo "Updating kubeconfig..."
       - aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-      - echo "Updating image in deployment..."
-      - sed -i "s|<AWS_ACCOUNT_ID>|$AWS_ACCOUNT_ID|g" k8s/deployment.yaml
-      - sed -i "s|<AWS_REGION>|$AWS_REGION|g" k8s/deployment.yaml
       - echo "Deploying to EKS..."
       - kubectl apply -f k8s/deployment.yaml
       - kubectl apply -f k8s/service.yaml
@@ -59,8 +54,3 @@ artifacts:
     - k8s/deployment.yaml
     - k8s/service.yaml
     - buildspec.yml
-
-logs:
-  cloudwatch:
-    group-name: "/codebuild/brain-tasks-app"
-    stream-name: "build-logs"
