@@ -119,28 +119,40 @@ docker rm brain-tasks-test
 # Create ECR repository
 aws ecr create-repository \
   --repository-name brain-tasks-app \
-  --region us-east-1
+  --region ap-south-1
 
 # Authenticate Docker to ECR
-aws ecr get-login-password --region us-east-1 | \
+aws ecr get-login-password --region ap-south-1 | \
   docker login --username AWS --password-stdin \
-  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+  675253838749.dkr.ecr.ap-south-1.amazonaws.com
 
 # Tag image
 docker tag brain-tasks-app:latest \
-  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
+  675253838749.dkr.ecr.ap-south-1.amazonaws.com/brain-tasks-app:latest
 
 # Push to ECR
 docker push \
-  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/brain-tasks-app:latest
+  675253838749.dkr.ecr.ap-south-1.amazonaws.com/brain-tasks-app:latest
 
 # Verify image in ECR
-aws ecr list-images --repository-name brain-tasks-app --region us-east-1
+aws ecr list-images --repository-name brain-tasks-app --region ap-south-1
 ```
+
+### ✅ Output — ECR Login Successful
+
+![ECR Login](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (641).png)
 
 ### ✅ Output — ECR Repository Created
 
-![ECR Repository](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/ecr-repo.png)
+![ECR Repository](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (642).png)
+
+### ✅ Output — Image Pushed to ECR
+
+![ECR Push](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (645).png)
+
+### ✅ Output — Image Listed in ECR
+
+![ECR Image](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (644).png)
 
 ---
 
@@ -156,14 +168,14 @@ aws ecr list-images --repository-name brain-tasks-app --region us-east-1
 # Create EKS cluster
 eksctl create cluster \
   --name brain-tasks-cluster \
-  --region us-east-1 \
+  --region ap-south-1 \
   --nodegroup-name brain-tasks-nodes \
   --node-type t3.micro \
   --nodes 2 \
   --managed
 
 # Configure kubectl
-aws eks update-kubeconfig --region us-east-1 --name brain-tasks-cluster
+aws eks update-kubeconfig --region ap-south-1 --name brain-tasks-cluster
 
 # Verify nodes are ready
 kubectl get nodes
@@ -206,7 +218,7 @@ aws ssm put-parameter \
 # Trigger a manual build
 aws codebuild start-build \
   --project-name brain-tasks-app-build \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ### ✅ Output — CodeBuild Project
@@ -265,7 +277,7 @@ kubectl logs -l app=brain-tasks-app --all-containers
 
 | Variable | Value |
 |----------|-------|
-| `AWS_REGION` | `us-east-1` |
+| `AWS_REGION` | `ap-south-1` |
 | `ECR_REPO_NAME` | `brain-tasks-app` |
 | `CLUSTER_NAME` | `brain-tasks-cluster` |
 | `K8S_NAMESPACE` | `default` |
@@ -285,7 +297,7 @@ kubectl logs -l app=brain-tasks-app --all-containers
 
 ```bash
 # Delete EKS cluster to stop charges
-eksctl delete cluster --name brain-tasks-cluster --region us-east-1
+eksctl delete cluster --name brain-tasks-cluster --region ap-south-1
 ```
 
 ---
