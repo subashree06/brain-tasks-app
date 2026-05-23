@@ -273,7 +273,15 @@ aws codebuild start-build \
 
 ### ✅ Output — Pipeline Succeeded
 
-![CodePipeline](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codepipeline.png)
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28664%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28665%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28667%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28669%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28672%29.png)
 
 ---
 
@@ -297,7 +305,7 @@ kubectl logs -l app=brain-tasks-app --all-containers
 
 ### ✅ Output — CloudWatch Logs
 
-![CloudWatch Logs](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/cloudwatch.png)
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28673%29.png)
 
 ---
 
