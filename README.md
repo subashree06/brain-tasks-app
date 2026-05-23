@@ -140,19 +140,19 @@ aws ecr list-images --repository-name brain-tasks-app --region ap-south-1
 
 ### ✅ Output — ECR Login Successful
 
-![ECR Login](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (641).png)
+![ECR Login](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28641%29.png)
 
 ### ✅ Output — ECR Repository Created
 
-![ECR Repository](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (642).png)
+![ECR Repository](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28642%29.png)
 
 ### ✅ Output — Image Pushed to ECR
 
-![ECR Push](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (645).png)
+![ECR Push](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28645%29.png)
 
 ### ✅ Output — Image Listed in ECR
 
-![ECR Image](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot (644).png)
+![ECR Image](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28644%29.png)
 
 ---
 
