@@ -326,24 +326,6 @@ kubectl logs -l app=brain-tasks-app --all-containers
 
 ---
 
-## 💡 Free Tier Notes
-
-| Service | Free Tier |
-|---------|-----------|
-| ECR | 500 MB/month free |
-| CodeBuild | 100 min/month free |
-| CodePipeline | 1 pipeline free |
-| CloudWatch Logs | 5 GB free |
-| EKS Control Plane | ❌ $0.10/hr — delete when not in use |
-| EC2 t3.micro nodes | 750 hrs/month free |
-
-```bash
-# Delete EKS cluster to stop charges
-eksctl delete cluster --name brain-tasks-cluster --region ap-south-1
-```
-
----
-
 ## 👤 Author
 
 **Subashree** — Deployed as part of a DevOps learning project covering Docker, ECR, EKS, CodeBuild, CodePipeline, and CloudWatch.
