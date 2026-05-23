@@ -229,13 +229,25 @@ aws codebuild start-build \
   --region ap-south-1
 ```
 
-### ✅ Output — CodeBuild Project
+### ✅ Output — CodeBuild
 
-![CodeBuild Project](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codebuild.png)
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28650%29.png)
 
-### ✅ Output — Build Succeeded
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28651%29.png)
 
-![CodeBuild Success](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/codebuild-success.png)
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28652%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28656%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28657%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28658%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28659%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28661%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28662%29.png)
 
 ---
 
