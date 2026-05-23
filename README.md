@@ -191,13 +191,21 @@ kubectl get pods
 kubectl get svc brain-tasks-app-service
 ```
 
-### ✅ Output — EKS Cluster Running
+### ✅ Output — EKS Nodes Running
 
-![EKS Cluster](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/eks-cluster.png)
+![EKS Nodes](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28646%29.png)
 
 ### ✅ Output — Pods Running
 
-![Pods Running](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/eks-pods.png)
+![Pods Running](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28647%29.png)
+
+### ✅ Output — Service & LoadBalancer
+
+![Service](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28648%29.png)
+
+### ✅ Output — App Running via EKS LoadBalancer
+
+![App on EKS](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28649%29.png)
 
 ---
 

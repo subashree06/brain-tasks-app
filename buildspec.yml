@@ -1,9 +1,8 @@
- 
 version: 0.2
 
 env:
   variables:
-    AWS_REGION: "us-east-1"
+    AWS_REGION: "ap-south-1"
     ECR_REPO_NAME: "brain-tasks-app"
     K8S_NAMESPACE: "default"
     CLUSTER_NAME: "brain-tasks-cluster"
@@ -15,29 +14,45 @@ phases:
     runtime-versions:
       docker: 20
     commands:
+      - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl && mv kubectl /usr/local/bin/
+      - kubectl version --client
+
   pre_build:
     commands:
+      - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
       - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - echo "Image URI - $IMAGE_URI"
+      - echo "Image Tag - $IMAGE_TAG"
+
   build:
     commands:
+      - echo "Building Docker image..."
       - docker build -t $ECR_REPO_NAME:$IMAGE_TAG .
       - docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI:$IMAGE_TAG
       - docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI:latest
+
   post_build:
     commands:
+      - echo "Pushing image to ECR..."
       - docker push $IMAGE_URI:$IMAGE_TAG
       - docker push $IMAGE_URI:latest
+      - echo "Updating kubeconfig..."
       - aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+      - echo "Updating image in deployment..."
       - sed -i "s|<AWS_ACCOUNT_ID>|$AWS_ACCOUNT_ID|g" k8s/deployment.yaml
       - sed -i "s|<AWS_REGION>|$AWS_REGION|g" k8s/deployment.yaml
+      - echo "Deploying to EKS..."
       - kubectl apply -f k8s/deployment.yaml
       - kubectl apply -f k8s/service.yaml
       - kubectl set image deployment/brain-tasks-app brain-tasks-app=$IMAGE_URI:$IMAGE_TAG -n $K8S_NAMESPACE
       - kubectl rollout status deployment/brain-tasks-app -n $K8S_NAMESPACE --timeout=120s
+      - echo "Deployment complete!"
+      - kubectl get pods -n $K8S_NAMESPACE
+      - kubectl get svc brain-tasks-app-service -n $K8S_NAMESPACE
 
 artifacts:
   files:
