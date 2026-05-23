@@ -307,6 +307,12 @@ kubectl logs -l app=brain-tasks-app --all-containers
 
 ![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28673%29.png)
 
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28674%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28675%29.png)
+
+![](https://raw.githubusercontent.com/subashree06/brain-tasks-app/main/screenshots/Screenshot%20%28676%29.png)
+
 ---
 
 ## ⚙️ Environment Variables
